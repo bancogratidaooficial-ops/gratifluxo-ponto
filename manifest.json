@@ -1,10 +1,13 @@
 {
-  "name": "Nexus Ponto Oficial",
-  "short_name": "Nexus Ponto",
-  "start_url": "https://tapar.gap40.com.br",
+  "name": "Nexos Johnson - Ponto",
+  "short_name": "Nexos Johnson",
+  "description": "Planilha de ponto - Dia Data Hora - Backup Nexos Johnson",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#001a4d",
   "theme_color": "#001a4d",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "./icon-192.png",
