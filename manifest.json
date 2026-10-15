@@ -1,8 +1,7 @@
 {
-  "name": "Nexus Ponto - Portal do Povo",
+  "name": "Nexus Ponto Oficial",
   "short_name": "Nexus Ponto",
-  "description": "Marcação de ponto Nexus Mobile",
-  "start_url": "./index.html",
+  "start_url": "https://tapar.gap40.com.br",
   "display": "standalone",
   "background_color": "#001a4d",
   "theme_color": "#001a4d",
@@ -10,14 +9,12 @@
     {
       "src": "./icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "./icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
