@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Nexus Ponto - Portal do Povo</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#001a4d">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+*{margin:0;box-sizing:border-box}
+body{background:#020b22;color:#fff;font-family:Arial}
+.header{background:linear-gradient(180deg,#002277,#00133d);border-bottom:2px solid #004aad;padding:14px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:9}
+.header img{width:58px;height:58px;border-radius:12px;background:#fff;padding:2px;box-shadow:0 2px 10px #000}
+.header b{font-size:16px;display:block;letter-spacing:0.5px}
+.header span{font-size:10px;color:#7aa8ff}
+.card-hora{background:radial-gradient(circle at center,#0a245a,#020b22);border:1px solid #0d2d6e;margin:12px;border-radius:18px;padding:18px;text-align:center}
+.card-hora h1{font-size:42px;color:#ffcc00;letter-spacing:3px;font-weight:900}
+.card-hora .data{color:#8aa8e0;font-size:12px;margin-top:4px}
+.card-hora .gps{color:#00ff88;font-size:10px;margin-top:8px;background:#001a33;display:inline-block;padding:4px 10px;border-radius:20px}
+.botoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px}
+.btn{border:0;border-radius:14px;padding:18px 10px;font-weight:900;font-size:13px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 4px 0 rgba(0,0,0,0.3)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,0.3)}
+.btn-entrada{background:linear-gradient(180deg,#2a5bff,#0022aa);color:#fff}
+.btn-intervalo{background:linear-gradient(180deg,#ffde59,#ff9900);color:#000}
+.btn-volta{background:linear-gradient(180deg,#ffb700,#ff8a00);color:#000}
+.btn-saida{background:linear-gradient(180deg,#00e676,#008a4a);color:#fff}
+.lista{background:#0a0a0a;margin:12px;border-radius:14px;border:1px solid #222;overflow:hidden}
+.lista-top{background:#111;padding:10px 12px;font-size:11px;font-weight:900;color:#ffcc00;display:flex;justify-content:space-between}
+.item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid #1a1a1a;font-size:12px}
+.item b{color:#fff}
+.item small{color:#888}
+.badge{background:#002a7a;color:#7ab8ff;padding:3px 8px;border-radius:20px;font-size:9px;font-weight:800}
+.acoes{display:flex;gap:8px;margin:12px}
+.mini{flex:1;background:#111;border:1px solid #222;color:#ccc;padding:10px;border-radius:10px;font-size:11px;font-weight:800;text-align:center;cursor:pointer}
+.mini.destaque{background:#ffcc00;color:#000;border-color:#ffcc00}
+.install{background:linear-gradient(90deg,#004aad,#00c2ff);color:#fff;margin:12px;padding:12px;border-radius:12px;text-align:center;font-weight:900;font-size:13px;cursor:pointer;display:none}
+</style>
+</head>
+<body>
+
+<div class="header">
+<img src="./icon-192.png">
+<div><b>NEXUS MOBILE</b><span>WIDGET MARCAÇÃO DE PONTO - PORTAL DO POVO</span></div>
+</div>
+
+<div class="card-hora">
+<h1 id="hora">00:00:00</h1>
+<div class="data" id="data">--/--/----</div>
+<div class="gps" id="gps">📍 Localização: Curitiba - PR • GPS OK</div>
+</div>
+
+<div class="install" id="btnInstalar" onclick="instalarApp()">📲 INSTALAR APP NEXUS PONTO NA TELA INICIAL</div>
+
+<div class="botoes">
+<button class="btn btn-entrada" onclick="bater('ENTRADA')">🕐<span>ENTRADA</span></button>
+<button class="btn btn-intervalo" onclick="bater('INTERVALO')">☕<span>INTERVALO</span></button>
+<button class="btn btn-volta" onclick="bater('VOLTA INTERVALO')">↩️<span>VOLTA</span></button>
+<button class="btn btn-saida" onclick="bater('SAÍDA')">✅<span>SAÍDA</span></button>
+</div>
+
+<div class="acoes">
+<div class="mini" onclick="exportar()">📤 WHATSAPP</div>
+<div class="mini" onclick="limpar()">🗑️ LIMPAR</div>
+<div class="mini destaque" onclick="location.href='../index.html'">⬅️ PORTAL</div>
+</div>
+
+<div class="lista">
+<div class="lista-top"><span>HOJE - MEUS PONTOS</span><span id="total">0 registros</span></div>
+<div id="listaPontos"><div style="padding:30px;text-align:center;color:#444;font-size:11px">Nenhum ponto hoje.<br>Clique em ENTRADA</div></div>
+</div>
+
+<script>
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;document.getElementById('btnInstalar').style.display='block'});
+function instalarApp(){if(deferredPrompt){deferredPrompt.prompt()}}
+
+function tick(){
+ const d=new Date();
+ document.getElementById('hora').textContent=d.toLocaleTimeString('pt-BR');
+ document.getElementById('data').textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+}
+setInterval(tick,1000);tick();
+
+function keyHoje(){return 'nexus_ponto_'+new Date().toISOString().slice(0,10)}
+function getLista(){return JSON.parse(localStorage.getItem(keyHoje())||'[]')}
+function salvar(lista){localStorage.setItem(keyHoje(),JSON.stringify(lista));render()}
+
+function bater(tipo){
+ const agora=new Date();
+ const reg={tipo:tipo,hora:agora.toLocaleTimeString('pt-BR'),data:agora.toLocaleDateString('pt-BR'),ts:Date.now()};
+ const lista=getLista();
+ lista.unshift(reg);
+ salvar(lista);
+ if(navigator.vibrate) navigator.vibrate(80);
+}
+
+function render(){
+ const lista=getLista();
+ document.getElementById('total').textContent=lista.length+' registros';
+ const div=document.getElementById('listaPontos');
+ if(lista.length==0){div.innerHTML='<div style="padding:30px;text-align:center;color:#444;font-size:11px">Nenhum ponto hoje.<br>Clique em ENTRADA</div>';return}
+ div.innerHTML=lista.map(r=>`<div class="item"><div><b>${r.tipo}</b><br><small>${r.hora}</small></div><div class="badge">${r.data}</div></div>`).join('');
+}
+render();
+function limpar(){if(confirm('Apagar pontos de hoje?')){localStorage.removeItem(keyHoje());render()}}
+function exportar(){
+ const lista=getLista();
+ if(!lista.length){alert('Sem pontos hoje');return}
+ let txt=`*NEXUS PONTO - ${new Date().toLocaleDateString('pt-BR')}*\n\n`;
+ lista.slice().reverse().forEach(r=>{txt+=`${r.tipo} - ${r.hora}\n`});
+ window.open('https://wa.me/?text='+encodeURIComponent(txt),'_blank');
+}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js')}
+</script>
+</body>
+</html>
