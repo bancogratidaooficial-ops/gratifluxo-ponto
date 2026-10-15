@@ -1,7 +1,7 @@
 {
-  "name": "Gratifica Pontos",
-  "short_name": "Gratifica Pontos",
-  "description": "Planilha de ponto - Gratifica Pontos",
+  "name": "Gratifluxo Pontos",
+  "short_name": "Gratifluxo Pontos",
+  "description": "Gratifluxo Pontos - Planilha de ponto",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
