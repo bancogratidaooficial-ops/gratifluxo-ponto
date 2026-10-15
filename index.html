@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gratifica Pontos</title>
+<title>Gratififluxo Pontos</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#eef2ff;font-family:Arial}
 .top{background:#001a4d;color:#fff;padding:14px;text-align:center}
@@ -22,7 +22,7 @@ td{padding:10px 4px;border-bottom:1px solid #eee;text-align:center}
 </head>
 <body>
 <div class="top">
-<b>📊 GRATIFICA PONTOS</b><br>
+<b>📊 GRATIFIFLUXO PONTOS</b><br>
 <small style="color:#7ab8ff">Planilha Ponto - Dia / Data / Hora</small><br>
 <small id="relogio" style="color:#ffcc00"></small>
 </div>
@@ -43,7 +43,7 @@ td{padding:10px 4px;border-bottom:1px solid #eee;text-align:center}
 
 <div class="foot">
 <button class="btn" style="background:#25D366;color:#fff" onclick="exportarZap()">📲 ENVIAR NO WHATSAPP</button>
-<button class="btn" style="background:#001a4d;color:#fff" onclick="exportarCSV()">📥 BAIXAR EXCEL GRATIFICA PONTOS</button>
+<button class="btn" style="background:#001a4d;color:#fff" onclick="exportarCSV()">📥 BAIXAR EXCEL GRATIFIFLUXO PONTOS</button>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
 <button class="btn" style="background:#001a4d;color:#00ff88;border:1px solid #00ff88" onclick="fazerBackup()">💾 BACKUP</button>
 <button class="btn" style="background:#001a4d;color:#ffcc00;border:1px solid #ffcc00" onclick="document.getElementById('f').click()">♻️ RESTAURAR</button>
@@ -59,7 +59,7 @@ function bater(tipo){
  let dados=JSON.parse(localStorage.getItem('gratifica_pontos_v1')||'{}');
  if(!dados[data]) dados[data]={dia,data,entrada:'',almoco_ida:'',almoco_volta:'',saida:''};
  dados[data][tipo==='almoco_ida'?'almoco_ida':tipo==='almoco_volta'?'almoco_volta':tipo]=hora;
- localStorage.setItem('gratifica_pontos_v1',JSON.stringify(dados));render();
+ localStorage.setItem('gratififlu_pontos_v1',JSON.stringify(dados));render();
 }
 function calc(r){
  if(!r.entrada) return '--:--';
@@ -69,20 +69,20 @@ function calc(r){
  return '--:--';
 }
 function render(){
- let dados=JSON.parse(localStorage.getItem('gratifica_pontos_v1')||'{}');
+ let dados=JSON.parse(localStorage.getItem('gratififluxo_pontos_v1')||'{}');
  let tb=document.getElementById('tbody');
  let lista=Object.values(dados).sort((a,b)=>{let [da,ma,aa]=a.data.split('/');let [db,mb,ab]=b.data.split('/');return new Date(aa,ma-1,da)-new Date(ab,mb-1,db)});
  tb.innerHTML=lista.length?lista.map(r=>`<tr><td><b>${r.dia}</b></td><td>${r.data}</td><td>${r.entrada||'-'}</td><td>${r.almoco_ida||'-'}</td><td>${r.almoco_volta||'-'}</td><td>${r.saida||'-'}</td><td class="total">${calc(r)}</td></tr>`).join(''):'<tr><td colspan=7 style="padding:20px;color:#888">Nenhum ponto</td></tr>';
 }
 function exportarCSV(){
- let dados=JSON.parse(localStorage.getItem('gratifica_pontos_v1')||'{}');let lista=Object.values(dados);if(!lista.length){alert('Sem dados');return}
+ let dados=JSON.parse(localStorage.getItem('gratififluxo_pontos_v1')||'{}');let lista=Object.values(dados);if(!lista.length){alert('Sem dados');return}
  let csv='DIA;DATA;ENTRADA;ALMOCO SAIDA;ALMOCO VOLTA;SAIDA;TOTAL\n';lista.forEach(r=>csv+=`${r.dia};${r.data};${r.entrada};${r.almoco_ida};${r.almoco_volta};${r.saida};${calc(r)}\n`);
- let blob=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`gratifica-pontos-${new Date().toISOString().slice(0,10)}.csv`;a.click();
+ let blob=new Blob([csv],{type:'text/csv'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`gratififluxo-pontos-${new Date().toISOString().slice(0,10)}.csv`;a.click();
 }
-function exportarZap(){let dados=JSON.parse(localStorage.getItem('gratifica_pontos_v1')||'{}');let lista=Object.values(dados);if(!lista.length){alert('Sem dados');return}let txt=`*GRATIFICA PONTOS*%0A%0A`;lista.forEach(r=>txt+=`${r.data} ${r.dia} - Ent ${r.entrada} / Alm ${r.almoco_ida}-${r.almoco_volta} / Sai ${r.saida} = ${calc(r)}%0A`);window.open('https://wa.me/?text='+txt,'_blank');}
-function fazerBackup(){let d=localStorage.getItem('gratifica_pontos_v1');if(!d){alert('Sem dados');return}let b=new Blob([d],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`gratifica-pontos-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();}
-function restaurar(i){let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{localStorage.setItem('gratifica_pontos_v1',e.target.result);render();alert('Restaurado!')};r.readAsText(f);}
-function limpar(){if(confirm('Zerar?')){localStorage.removeItem('gratifica_pontos_v1');render();}}
+function exportarZap(){let dados=JSON.parse(localStorage.getItem('gratififluxo_pontos_v1')||'{}');let lista=Object.values(dados);if(!lista.length){alert('Sem dados');return}let txt=`*GRATIFIFLUXO PONTOS*%0A%0A`;lista.forEach(r=>txt+=`${r.data} ${r.dia} - Ent ${r.entrada} / Alm ${r.almoco_ida}-${r.almoco_volta} / Sai ${r.saida} = ${calc(r)}%0A`);window.open('https://wa.me/?text='+txt,'_blank');}
+function fazerBackup(){let d=localStorage.getItem('gratififluxo_pontos_v1');if(!d){alert('Sem dados');return}let b=new Blob([d],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`gratifica-pontos-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();}
+function restaurar(i){let f=i.files[0];if(!f)return;let r=new FileReader();r.onload=e=>{localStorage.setItem('gratififluxo_pontos_v1',e.target.result);render();alert('Restaurado!')};r.readAsText(f);}
+function limpar(){if(confirm('Zerar?')){localStorage.removeItem('gratififluxo_pontos_v1');render();}}
 setInterval(()=>document.getElementById('relogio').textContent=new Date().toLocaleString('pt-BR'),1000);render();
 </script>
 </body>
