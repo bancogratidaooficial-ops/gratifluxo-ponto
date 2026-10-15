@@ -3,45 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Planilha Ponto - Nexus Johnson</title>
-<link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#001a4d">
+<title>Planilha Ponto - Nexos Johnson</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f0f3ff;font-family:Arial;color:#000}
+*{box-sizing:border-box}body{margin:0;background:#eef2ff;font-family:Arial;color:#000}
 .top{background:#001a4d;color:#fff;padding:14px;text-align:center;position:sticky;top:0;z-index:10}
 .top b{font-size:16px}.top small{color:#7ab8ff}
-.controles{display:flex;gap:8px;padding:10px;background:#fff;box-shadow:0 2px 6px #0002;position:sticky;top:58px;z-index:9}
-.controles button{flex:1;padding:12px 6px;border:0;border-radius:10px;font-weight:900;font-size:11px}
-.be{background:#001a4d;color:#fff}.bs{background:#ffcc00}
+.controles{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px;background:#fff}
+.controles button{padding:14px;border:0;border-radius:12px;font-weight:900;font-size:12px}
+.be{background:#001a4d;color:#fff}.bs{background:#ffcc00;color:#000}
 .ba{background:#e9efff;color:#001a4d;border:1px solid #c5d2ff!important}
-.tabela{margin:10px;background:#fff;border-radius:12px;overflow:auto;border:1px solid #d0d8f0}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:560px}
-th{background:#001a4d;color:#fff;padding:8px 6px;position:sticky;top:0;font-size:11px}
-td{padding:8px 6px;border-bottom:1px solid #eef;text-align:center}
+
+.aviso{margin:10px;background:#fff3cd;border:1px solid #ffe69c;padding:8px;border-radius:8px;font-size:11px;text-align:center;color:#664d03}
+
+.tabela{margin:10px;background:#fff;border-radius:12px;overflow-x:auto;border:1px solid #d0d8f0;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px}
+th{background:#001a4d;color:#fff;padding:10px 6px;font-size:11px;white-space:nowrap}
+td{padding:10px 6px;border-bottom:1px solid #eef;text-align:center;white-space:nowrap}
 tr:nth-child(even){background:#f8faff}
-.total{font-weight:900;background:#ffcc00!important}
+.total{font-weight:900;background:#ffcc00!important;color:#000}
+.dia{font-weight:900;color:#001a4d}
+
 .foot{padding:10px;display:grid;gap:8px}
-.btn-foot{padding:12px;border-radius:10px;border:0;font-weight:900;font-size:13px}
+.btn-foot{padding:14px;border-radius:12px;border:0;font-weight:900;font-size:13px}
 </style>
 </head>
 <body>
 <div class="top">
 <b>📊 PLANILHA PONTO - NEXOS JOHNSON</b><br>
-<small>Dia / Data / Hora automático</small><br>
+<small>Igual Gerador de Escalas</small><br>
 <small id="relogio" style="color:#ffcc00;font-size:13px"></small>
 </div>
 
 <div class="controles">
 <button class="be" onclick="bater('entrada')">🟢 ENTRADA</button>
-<button class="ba" onclick="bater('almoco_ida')">🍽️ ALM. SAÍDA</button>
-<button class="ba" onclick="bater('almoco_volta')">↩️ VOLTA</button>
 <button class="bs" onclick="bater('saida')">🔴 SAÍDA</button>
+<button class="ba" onclick="bater('almoco_ida')">🍽️ ALM. SAÍDA</button>
+<button class="ba" onclick="bater('almoco_volta')">↩️ ALM. VOLTA</button>
 </div>
+
+<div class="aviso">👉 Arraste a planilha pro lado com o dedo pra ver tudo 👉</div>
 
 <div class="tabela">
 <table>
 <thead>
-<tr><th>DIA</th><th>DATA</th><th>ENTRADA</th><th>ALM. SAÍDA</th><th>ALM. VOLTA</th><th>SAÍDA</th><th>TOTAL</th></tr>
+<tr>
+<th>DIA</th>
+<th>DATA</th>
+<th>ENTRADA</th>
+<th>ALM. SAÍDA</th>
+<th>ALM. VOLTA</th>
+<th>SAÍDA</th>
+<th>TOTAL HORAS</th>
+</tr>
 </thead>
 <tbody id="tbody"></tbody>
 </table>
@@ -49,10 +62,10 @@ tr:nth-child(even){background:#f8faff}
 
 <div class="foot">
 <button class="btn-foot" style="background:#25D366;color:#fff" onclick="exportarZap()">📲 ENVIAR NO WHATSAPP</button>
-<button class="btn-foot" style="background:#001a4d;color:#fff" onclick="exportarCSV()">📥 BAIXAR EXCEL</button>
+<button class="btn-foot" style="background:#001a4d;color:#fff" onclick="exportarCSV()">📥 BAIXAR EXCEL - NEXOS JOHNSON</button>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<button class="btn-foot" style="background:#001a4d;color:#00ff88;border:1px solid #00ff88" onclick="fazerBackup()">💾 BACKUP NEXOS</button>
-<button class="btn-foot" style="background:#001a4d;color:#ffcc00;border:1px solid #ffcc00" onclick="document.getElementById('inputRestore').click()">♻️ RESTAURAR NEXOS</button>
+<button class="btn-foot" style="background:#001a4d;color:#00ff88;border:1px solid #00ff88" onclick="fazerBackup()">💾 BACKUP</button>
+<button class="btn-foot" style="background:#001a4d;color:#ffcc00;border:1px solid #ffcc00" onclick="document.getElementById('inputRestore').click()">♻️ RESTAURAR</button>
 <input type="file" id="inputRestore" style="display:none" accept=".json" onchange="restaurar(this)">
 </div>
 <button class="btn-foot" style="background:#fff;color:#c00;border:1px solid #fcc" onclick="limparTudo()">🗑️ Zerar mês</button>
@@ -82,6 +95,7 @@ function calcTotal(r){
   const toMin=t=>{let [h,m]=t.split(':').map(Number);return h*60+m};
   let total=toMin(r.saida)-toMin(r.entrada);
   if(r.almoco_ida&&r.almoco_volta) total-=(toMin(r.almoco_volta)-toMin(r.almoco_ida));
+  if(total<0) total+=1440;
   let h=Math.floor(total/60);let m=total%60;
   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
  }catch{return '--:--'}
@@ -91,20 +105,20 @@ function render(){
  let tbody=document.getElementById('tbody');
  let lista=Object.values(dados).sort((a,b)=>{let [da,ma,aa]=a.data.split('/');let [db,mb,ab]=b.data.split('/');return new Date(aa,ma-1,da)-new Date(ab,mb-1,db)});
  if(!lista.length){tbody.innerHTML='<tr><td colspan=7 style="padding:20px;color:#888">Nenhum ponto ainda. Clique em ENTRADA</td></tr>';return}
- tbody.innerHTML=lista.map(r=>`<tr><td><b>${r.dia}</b></td><td>${r.data}</td><td>${r.entrada||'-'}</td><td>${r.almoco_ida||'-'}</td><td>${r.almoco_volta||'-'}</td><td>${r.saida||'-'}</td><td class="total">${calcTotal(r)}</td></tr>`).join('');
+ tbody.innerHTML=lista.map(r=>`<tr><td class="dia">${r.dia}</td><td>${r.data}</td><td>${r.entrada||'-'}</td><td>${r.almoco_ida||'-'}</td><td>${r.almoco_volta||'-'}</td><td>${r.saida||'-'}</td><td class="total">${calcTotal(r)}</td></tr>`).join('');
 }
 function exportarZap(){
  let dados=JSON.parse(localStorage.getItem('planilha_ponto_nexus_v2')||'{}');
  let lista=Object.values(dados);
  if(!lista.length){alert('Sem dados');return}
  let txt=`*PLANILHA PONTO - NEXOS JOHNSON*%0A%0A`;
- lista.forEach(r=>{txt+=`📅 ${r.data} (${r.dia})%0A➡️ Ent: ${r.entrada||'-'} | 🍽️ ${r.almoco_ida||'-'} > ${r.almoco_volta||'-'} | ⬅️ Saída: ${r.saida||'-'} | ⏱️ ${calcTotal(r)}%0A%0A`});
+ lista.forEach(r=>{txt+=`📅 ${r.data} (${r.dia})%0AEnt: ${r.entrada||'-'} | Alm: ${r.almoco_ida||'-'}> ${r.almoco_volta||'-'} | Saída: ${r.saida||'-'} | Total: ${calcTotal(r)}%0A%0A`});
  window.open(`https://wa.me/?text=${txt}`,'_blank');
 }
 function exportarCSV(){
  let dados=JSON.parse(localStorage.getItem('planilha_ponto_nexus_v2')||'{}');
  let lista=Object.values(dados);
- let csv='DIA;DATA;ENTRADA;ALMOCO SAIDA;ALMOCO VOLTA;SAIDA;TOTAL\n';
+ let csv='DIA;DATA;ENTRADA;ALMOCO SAIDA;ALMOCO VOLTA;SAIDA;TOTAL HORAS\n';
  lista.forEach(r=>{csv+=`${r.dia};${r.data};${r.entrada};${r.almoco_ida};${r.almoco_volta};${r.saida};${calcTotal(r)}\n`});
  let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
  let url=URL.createObjectURL(blob);
@@ -119,24 +133,17 @@ function fazerBackup(){
  a.href = url;
  a.download = `nexos-johnson-backup-${new Date().toISOString().slice(0,10)}.json`;
  a.click();
- alert('Backup NEXOS JOHNSON baixado!');
 }
 function restaurar(input){
  let file = input.files[0];
  if(!file) return;
  let reader = new FileReader();
  reader.onload = function(e){
-  try{
-   let json = e.target.result;
-   JSON.parse(json);
-   localStorage.setItem('planilha_ponto_nexus_v2', json);
-   render();
-   alert('Restaurado! Seus pontos do NEXOS JOHNSON voltaram');
-  }catch{ alert('Arquivo inválido'); }
+  try{ localStorage.setItem('planilha_ponto_nexus_v2', e.target.result); render(); alert('Restaurado!'); }catch{ alert('Arquivo inválido'); }
  };
  reader.readAsText(file);
 }
-function limparTudo(){if(confirm('Apagar toda planilha do mês?')){localStorage.removeItem('planilha_ponto_nexus_v2');render();}}
+function limparTudo(){if(confirm('Apagar toda planilha?')){localStorage.removeItem('planilha_ponto_nexus_v2');render();}}
 setInterval(()=>{document.getElementById('relogio').textContent=new Date().toLocaleString('pt-BR')},1000);
 render();
 </script>
