@@ -3,30 +3,142 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nexus Ponto</title>
+<title>Planilha Ponto - Nexus Johnson</title>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#001a4d">
-<link rel="icon" href="./icon-192.png">
 <style>
-body{margin:0;background:#001a4d;color:#fff;font-family:Arial;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center}
-img{width:90px;height:90px;border-radius:20px;background:#fff;padding:4px;box-shadow:0 0 20px #00C2FF}
-h1{margin:16px 0 6px;font-size:20px}
-p{color:#7ab8ff;font-size:13px;margin:0 20px}
-.btn{margin-top:20px;background:linear-gradient(180deg,#00C2FF,#004aad);color:#fff;border:0;padding:16px 24px;border-radius:14px;font-weight:900;font-size:15px;width:85%;max-width:320px}
-.small{margin-top:12px;color:#aaa;font-size:11px}
+*{box-sizing:border-box}body{margin:0;background:#f0f3ff;font-family:Arial;color:#000}
+.top{background:#001a4d;color:#fff;padding:14px;text-align:center;position:sticky;top:0;z-index:10}
+.top b{font-size:16px}.top small{color:#7ab8ff}
+.controles{display:flex;gap:8px;padding:10px;background:#fff;box-shadow:0 2px 6px #0002;position:sticky;top:58px;z-index:9}
+.controles button{flex:1;padding:12px 6px;border:0;border-radius:10px;font-weight:900;font-size:11px}
+.be{background:#001a4d;color:#fff}.bs{background:#ffcc00}
+.ba{background:#e9efff;color:#001a4d;border:1px solid #c5d2ff!important}
+.tabela{margin:10px;background:#fff;border-radius:12px;overflow:auto;border:1px solid #d0d8f0}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:560px}
+th{background:#001a4d;color:#fff;padding:8px 6px;position:sticky;top:0;font-size:11px}
+td{padding:8px 6px;border-bottom:1px solid #eef;text-align:center}
+tr:nth-child(even){background:#f8faff}
+.total{font-weight:900;background:#ffcc00!important}
+.foot{padding:10px;display:grid;gap:8px}
+.btn-foot{padding:12px;border-radius:10px;border:0;font-weight:900;font-size:13px}
 </style>
-<script>
-// ABRE DIRETO O SITE OFICIAL
-setTimeout(()=>{ window.location.href='https://tapar.gap40.com.br'; }, 1200);
-</script>
 </head>
 <body>
-<img src="./icon-192.png">
-<h1>NEXUS MOBILE</h1>
-<p>Abrindo site oficial de ponto...</p>
-<p style="margin-top:6px">📍 Vai registrar onde você está</p>
-<button class="btn" onclick="location.href='https://tapar.gap40.com.br'">🔵 ABRIR AGORA - REGISTRAR PONTO</button>
-<div class="small">Se não abrir automático, clique no botão azul</div>
-<div class="small" style="margin-top:20px"><a href="../index.html" style="color:#7ab8ff">⬅️ Voltar ao Portal do Povo</a></div>
+<div class="top">
+<b>📊 PLANILHA PONTO - NEXOS JOHNSON</b><br>
+<small>Dia / Data / Hora automático</small><br>
+<small id="relogio" style="color:#ffcc00;font-size:13px"></small>
+</div>
+
+<div class="controles">
+<button class="be" onclick="bater('entrada')">🟢 ENTRADA</button>
+<button class="ba" onclick="bater('almoco_ida')">🍽️ ALM. SAÍDA</button>
+<button class="ba" onclick="bater('almoco_volta')">↩️ VOLTA</button>
+<button class="bs" onclick="bater('saida')">🔴 SAÍDA</button>
+</div>
+
+<div class="tabela">
+<table>
+<thead>
+<tr><th>DIA</th><th>DATA</th><th>ENTRADA</th><th>ALM. SAÍDA</th><th>ALM. VOLTA</th><th>SAÍDA</th><th>TOTAL</th></tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<div class="foot">
+<button class="btn-foot" style="background:#25D366;color:#fff" onclick="exportarZap()">📲 ENVIAR NO WHATSAPP</button>
+<button class="btn-foot" style="background:#001a4d;color:#fff" onclick="exportarCSV()">📥 BAIXAR EXCEL</button>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<button class="btn-foot" style="background:#001a4d;color:#00ff88;border:1px solid #00ff88" onclick="fazerBackup()">💾 BACKUP NEXOS</button>
+<button class="btn-foot" style="background:#001a4d;color:#ffcc00;border:1px solid #ffcc00" onclick="document.getElementById('inputRestore').click()">♻️ RESTAURAR NEXOS</button>
+<input type="file" id="inputRestore" style="display:none" accept=".json" onchange="restaurar(this)">
+</div>
+<button class="btn-foot" style="background:#fff;color:#c00;border:1px solid #fcc" onclick="limparTudo()">🗑️ Zerar mês</button>
+<a href="../index.html" style="text-align:center;color:#001a4d;font-size:12px;text-decoration:none;margin-top:6px">⬅️ Voltar ao Portal do Povo</a>
+</div>
+
+<script>
+function bater(tipo){
+ const d=new Date();
+ const dataStr=d.toLocaleDateString('pt-BR');
+ const horaStr=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+ const diaSem=d.toLocaleDateString('pt-BR',{weekday:'short'});
+ const key='planilha_ponto_nexus_v2';
+ let dados=JSON.parse(localStorage.getItem(key)||'{}');
+ if(!dados[dataStr]) dados[dataStr]={dia:diaSem,data:dataStr,entrada:'',almoco_ida:'',almoco_volta:'',saida:''};
+ if(tipo==='entrada') dados[dataStr].entrada=horaStr;
+ if(tipo==='almoco_ida') dados[dataStr].almoco_ida=horaStr;
+ if(tipo==='almoco_volta') dados[dataStr].almoco_volta=horaStr;
+ if(tipo==='saida') dados[dataStr].saida=horaStr;
+ localStorage.setItem(key,JSON.stringify(dados));
+ render();
+ navigator.vibrate&&navigator.vibrate(80);
+}
+function calcTotal(r){
+ if(!r.entrada||!r.saida) return '--:--';
+ try{
+  const toMin=t=>{let [h,m]=t.split(':').map(Number);return h*60+m};
+  let total=toMin(r.saida)-toMin(r.entrada);
+  if(r.almoco_ida&&r.almoco_volta) total-=(toMin(r.almoco_volta)-toMin(r.almoco_ida));
+  let h=Math.floor(total/60);let m=total%60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+ }catch{return '--:--'}
+}
+function render(){
+ let dados=JSON.parse(localStorage.getItem('planilha_ponto_nexus_v2')||'{}');
+ let tbody=document.getElementById('tbody');
+ let lista=Object.values(dados).sort((a,b)=>{let [da,ma,aa]=a.data.split('/');let [db,mb,ab]=b.data.split('/');return new Date(aa,ma-1,da)-new Date(ab,mb-1,db)});
+ if(!lista.length){tbody.innerHTML='<tr><td colspan=7 style="padding:20px;color:#888">Nenhum ponto ainda. Clique em ENTRADA</td></tr>';return}
+ tbody.innerHTML=lista.map(r=>`<tr><td><b>${r.dia}</b></td><td>${r.data}</td><td>${r.entrada||'-'}</td><td>${r.almoco_ida||'-'}</td><td>${r.almoco_volta||'-'}</td><td>${r.saida||'-'}</td><td class="total">${calcTotal(r)}</td></tr>`).join('');
+}
+function exportarZap(){
+ let dados=JSON.parse(localStorage.getItem('planilha_ponto_nexus_v2')||'{}');
+ let lista=Object.values(dados);
+ if(!lista.length){alert('Sem dados');return}
+ let txt=`*PLANILHA PONTO - NEXOS JOHNSON*%0A%0A`;
+ lista.forEach(r=>{txt+=`📅 ${r.data} (${r.dia})%0A➡️ Ent: ${r.entrada||'-'} | 🍽️ ${r.almoco_ida||'-'} > ${r.almoco_volta||'-'} | ⬅️ Saída: ${r.saida||'-'} | ⏱️ ${calcTotal(r)}%0A%0A`});
+ window.open(`https://wa.me/?text=${txt}`,'_blank');
+}
+function exportarCSV(){
+ let dados=JSON.parse(localStorage.getItem('planilha_ponto_nexus_v2')||'{}');
+ let lista=Object.values(dados);
+ let csv='DIA;DATA;ENTRADA;ALMOCO SAIDA;ALMOCO VOLTA;SAIDA;TOTAL\n';
+ lista.forEach(r=>{csv+=`${r.dia};${r.data};${r.entrada};${r.almoco_ida};${r.almoco_volta};${r.saida};${calcTotal(r)}\n`});
+ let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+ let url=URL.createObjectURL(blob);
+ let a=document.createElement('a');a.href=url;a.download=`nexos-johnson-${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
+function fazerBackup(){
+ let dados = localStorage.getItem('planilha_ponto_nexus_v2');
+ if(!dados){ alert('Nenhum dado pra fazer backup'); return; }
+ let blob = new Blob([dados], {type:'application/json'});
+ let url = URL.createObjectURL(blob);
+ let a = document.createElement('a');
+ a.href = url;
+ a.download = `nexos-johnson-backup-${new Date().toISOString().slice(0,10)}.json`;
+ a.click();
+ alert('Backup NEXOS JOHNSON baixado!');
+}
+function restaurar(input){
+ let file = input.files[0];
+ if(!file) return;
+ let reader = new FileReader();
+ reader.onload = function(e){
+  try{
+   let json = e.target.result;
+   JSON.parse(json);
+   localStorage.setItem('planilha_ponto_nexus_v2', json);
+   render();
+   alert('Restaurado! Seus pontos do NEXOS JOHNSON voltaram');
+  }catch{ alert('Arquivo inválido'); }
+ };
+ reader.readAsText(file);
+}
+function limparTudo(){if(confirm('Apagar toda planilha do mês?')){localStorage.removeItem('planilha_ponto_nexus_v2');render();}}
+setInterval(()=>{document.getElementById('relogio').textContent=new Date().toLocaleString('pt-BR')},1000);
+render();
+</script>
 </body>
 </html>
